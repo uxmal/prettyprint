@@ -40,64 +40,14 @@ public class PrettyPrinter
                 ++i;
                 switch (s[i])
                 {
-                case '{': /* start group */
-                    ++current_level;
-                    break;
-                case '}': /* end group */
-                    current_level = current_level - 1;
-                    if (break_level > current_level)
-                        break_level = current_level;
-                    break;
-                case 't': // indent
-                    buffer.right_enqueue((INDENT, int.MaxValue));
-                    ++total_chars_enqueued;
-                    break;
-                case 'b': // outdent
-                    buffer.right_enqueue((OUTDENT, int.MaxValue));
-                    ++total_chars_enqueued;
-                    break;
-                case 'n': // unconditional line break
-                    break_dq.Clear();
-                    break_level = current_level;
-                    buffer.right_enqueue((NEWLINE, int.MaxValue));
-                    ++total_chars_enqueued;
-                    print_buffer(buffer.Count);
-                    break;
-                case 'o': // optional line break
-                    while (break_dq.Count > 0 &&
-                        (break_dq.Left.level > current_level
-                            || (break_dq.Left.level == current_level
-                            && !break_dq.Left.connected)))
-                    { // discard breaks we are no longer interested in
-                        break_dq.left_dequeue();
-                    }
-                    break_dq.left_enqueue((total_chars_enqueued, current_level, false));
-                    break;
-                case 'c': // connected line break 
-                    if (break_level < current_level)
-                    {
-                        // discard breaks we are no longer interested in
-                        while (break_dq.Count > 0 &&
-                            break_dq.Left.level >= current_level) 
-                        {
-                            break_dq.left_dequeue();
-                        }
-                        buffer.right_enqueue((MARKER, current_level));
-                        ++total_chars_enqueued;
-                        break_dq.left_enqueue((total_chars_enqueued, current_level, true));
-                    }
-                    else
-                    { 
-                        // take an immediate line break, break_level = current_level
-                        break_dq.Clear();
-                        buffer.right_enqueue((NEWLINE, int.MaxValue));
-                        ++total_chars_enqueued;
-                        print_buffer(buffer.Count);
-                    }
-                    break;
-                default:
-                    AddPrintableCharacter(s[i]);
-                    break;
+                case '{': BeginGroup(); break;
+                case '}': EndGroup(); break;
+                case 't': Indent(); break;
+                case 'b': Outdent(); break;
+                case 'n': UnconditionalLineBreak(); break;
+                case 'o': OptionalLineBreak(); break;
+                case 'c': ConnectedLineBreak(); break;
+                default: AddPrintableCharacter(s[i]); break;
                 }
             }
             else if (s[i] == '\r' || s[i] == '\n')
@@ -109,7 +59,77 @@ public class PrettyPrinter
                 AddPrintableCharacter(s[i]);
             }
         }
-    }   /* prettyprint */
+    }
+
+    private void BeginGroup()
+    {
+        ++current_level;
+    }
+
+    private void EndGroup()
+    {
+        --current_level;
+        if (break_level > current_level)
+            break_level = current_level;
+    }
+
+    private void Indent()
+    {
+        buffer.right_enqueue((INDENT, int.MaxValue));
+        ++total_chars_enqueued;
+    }
+
+    private void Outdent()
+    {
+        buffer.right_enqueue((OUTDENT, int.MaxValue));
+        ++total_chars_enqueued;
+    }
+
+    private void UnconditionalLineBreak()
+    {
+        break_dq.Clear();
+        break_level = current_level;
+        buffer.right_enqueue((NEWLINE, int.MaxValue));
+        ++total_chars_enqueued;
+        print_buffer(buffer.Count);
+    }
+
+    private void OptionalLineBreak()
+    {
+        // discard breaks we are no longer interested in
+        while (break_dq.Count > 0 &&
+            (break_dq.Left.level > current_level
+                || (break_dq.Left.level == current_level
+                && !break_dq.Left.connected)))
+        { 
+            break_dq.left_dequeue();
+        }
+        break_dq.left_enqueue((total_chars_enqueued, current_level, false));
+    }
+
+    private void ConnectedLineBreak()
+    {
+        if (break_level < current_level)
+        {
+            // discard breaks we are no longer interested in
+            while (break_dq.Count > 0 &&
+                break_dq.Left.level >= current_level)
+            {
+                break_dq.left_dequeue();
+            }
+            buffer.right_enqueue((MARKER, current_level));
+            ++total_chars_enqueued;
+            break_dq.left_enqueue((total_chars_enqueued, current_level, true));
+        }
+        else
+        {
+            // take an immediate line break, break_level = current_level
+            break_dq.Clear();
+            buffer.right_enqueue((NEWLINE, int.MaxValue));
+            ++total_chars_enqueued;
+            print_buffer(buffer.Count);
+        }
+    }
 
     private void AddPrintableCharacter(char ch)
     {
