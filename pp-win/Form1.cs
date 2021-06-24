@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Reko.Core.Output;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;

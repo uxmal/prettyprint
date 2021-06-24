@@ -27,9 +27,10 @@ public class Dequeue<T> : IEnumerable<T>
                 return items.Length + d;
         }
     }
+
     private bool IsEmpty => left == right;
 
-    public T Left
+    public T Front
     {
         get
         {
@@ -39,7 +40,7 @@ public class Dequeue<T> : IEnumerable<T>
         }
     }
 
-    public T Right
+    public T Back
     {
         get
         {
@@ -83,7 +84,7 @@ public class Dequeue<T> : IEnumerable<T>
         }
     }
 
-    public T left_dequeue()
+    public T PopFront()
     {
         if (IsEmpty)
             throw new InvalidOperationException("There are no items to remove.");
@@ -93,7 +94,7 @@ public class Dequeue<T> : IEnumerable<T>
         return item;
     }
 
-    public T right_dequeue()
+    public T PopBack()
     {
         if (IsEmpty)
             throw new InvalidOperationException("There are no items to remove.");
@@ -103,14 +104,14 @@ public class Dequeue<T> : IEnumerable<T>
         return item;
     }
 
-    public void left_enqueue(in T item)
+    public void PushFront(in T item)
     {
         GrowIfFull();
         left = Bound(left - 1);
         items[left] = item;
     }
 
-    public void right_enqueue(in T item)
+    public void PushBack(in T item)
     {
         GrowIfFull();
         items[right] = item;
