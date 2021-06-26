@@ -1,50 +1,53 @@
 using System;
 using System.IO;
 
-public class OutputDevice
+namespace Reko.Core.Output
 {
-    private readonly TextWriter writer;
-    private bool atStart;
-
-    public OutputDevice(TextWriter writer, int deviceWidth, int indentWidth)
+    public class OutputDevice
     {
-        this.writer = writer;
-        this.DeviceWidth = deviceWidth;
-        this.IndentWidth = indentWidth;
-        this.atStart = true;
-    }
+        private readonly TextWriter writer;
+        private bool atStart;
 
-
-    public int DeviceWidth { get; }
-    public int IndentWidth { get; }
-
-    public int LeftMargin { get; private set; }
-    public void Write(char ch)
-    {
-        if (atStart)
+        public OutputDevice(TextWriter writer, int deviceWidth, int indentWidth)
         {
-            for (int i = 0; i < LeftMargin; ++i)
-            {
-                writer.Write(' ');
-            }
-            atStart = false;
+            this.writer = writer;
+            DeviceWidth = deviceWidth;
+            IndentWidth = indentWidth;
+            atStart = true;
         }
-        writer.Write(ch);
-    }
 
-    public void WriteLine()
-    {
-        writer.WriteLine();
-        atStart = true;
-    }
 
-    internal void Outdent()
-    {
-        LeftMargin -= IndentWidth;
-    }
+        public int DeviceWidth { get; }
+        public int IndentWidth { get; }
 
-    internal void Indent()
-    {
-        LeftMargin += IndentWidth;
+        public int LeftMargin { get; private set; }
+        public void Write(char ch)
+        {
+            if (atStart)
+            {
+                for (int i = 0; i < LeftMargin; ++i)
+                {
+                    writer.Write(' ');
+                }
+                atStart = false;
+            }
+            writer.Write(ch);
+        }
+
+        public void WriteLine()
+        {
+            writer.WriteLine();
+            atStart = true;
+        }
+
+        internal void Outdent()
+        {
+            LeftMargin -= IndentWidth;
+        }
+
+        internal void Indent()
+        {
+            LeftMargin += IndentWidth;
+        }
     }
 }

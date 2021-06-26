@@ -20,8 +20,8 @@ namespace pp_win
             txtSrc.Text = @"if (%{a == 3 && b == 3%})%n
 {%t%n
 print(""#"");%n
-print('2');% n
-% b}%n
+print('2');%n
+%b}%n
 ";
         }
 

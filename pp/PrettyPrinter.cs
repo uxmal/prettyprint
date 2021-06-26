@@ -65,31 +65,31 @@ namespace Reko.Core.Output
             Flush();
         }
 
-        private void BeginGroup()
+        public void BeginGroup()
         {
             ++current_level;
         }
 
-        private void EndGroup()
+        public void EndGroup()
         {
             --current_level;
             if (break_level > current_level)
                 break_level = current_level;
         }
 
-        private void Indent()
+        public void Indent()
         {
             buffer.PushBack((INDENT, int.MaxValue));
             ++total_chars_enqueued;
         }
 
-        private void Outdent()
+        public void Outdent()
         {
             buffer.PushBack((OUTDENT, int.MaxValue));
             ++total_chars_enqueued;
         }
 
-        private void UnconditionalLineBreak()
+        public void UnconditionalLineBreak()
         {
             break_dq.Clear();
             break_level = current_level;
@@ -104,7 +104,8 @@ namespace Reko.Core.Output
             break_level = current_level;
             print_buffer(buffer.Count);
         }
-        private void OptionalLineBreak()
+
+        public void OptionalLineBreak()
         {
             // discard breaks we are no longer interested in
             while (break_dq.Count > 0 &&
@@ -141,9 +142,16 @@ namespace Reko.Core.Output
             }
         }
 
+        public void Write(string s)
+        {
+            foreach (var ch in s)
+            {
+                AddPrintableCharacter(ch);
+            }
+        }
+
         private void AddPrintableCharacter(char ch)
         {
-            // it is a printable character
             int enqueued_chars = total_pchars_enqueued - total_pchars_flushed;
             if (enqueued_chars + output.LeftMargin >= output.DeviceWidth)
             {
@@ -151,16 +159,16 @@ namespace Reko.Core.Output
                 if (break_dq.Count > 0)
                 {
                     // split line at a break
-                    var temp = break_dq.PopBack();
-                    break_level = temp.level;
-                    print_buffer(temp.chars_enqueued - total_chars_flushed);
-                    if (!temp.connected)
+                    var (chars_enqueued, level, connected) = break_dq.PopBack();
+                    break_level = level;
+                    print_buffer(chars_enqueued - total_chars_flushed);
+                    if (!connected)
                         output.WriteLine();
                     break_level = Math.Min(break_level, current_level);
                 }
                 else
                 {
-                    // there are no breaks to take
+                    // there are no breaks to take!
                 }
             }
             // put the current character into the buffer
@@ -177,12 +185,12 @@ namespace Reko.Core.Output
         {
             for (int i = 0; i < k; ++i)
             {
-                var temp = buffer.PopFront();
+                var (character, level) = buffer.PopFront();
                 ++total_chars_flushed;
-                switch (temp.character)
+                switch (character)
                 {
                 case MARKER:
-                    if (temp.level <= break_level) output.WriteLine();
+                    if (level <= break_level) output.WriteLine();
                     break;
                 case NEWLINE:
                     output.WriteLine();
@@ -195,7 +203,7 @@ namespace Reko.Core.Output
                     break;
                 default:
                     ++total_pchars_flushed;
-                    output.Write(temp.character);
+                    output.Write(character);
                     break;
                 }
             }
