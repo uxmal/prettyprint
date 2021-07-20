@@ -294,6 +294,19 @@ namespace pp_win
                     case '&': rdr.Read(); state = State.Amp; break;
                     case '+': rdr.Read(); return Tok(TokenType.Add);
                     case ';': rdr.Read(); return Tok(TokenType.Semi);
+                    case '0':
+                    case '1':
+                    case '2':
+                    case '3':
+                    case '4':
+                    case '5':
+                    case '6':
+                    case '7':
+                    case '8':
+                    case '9':
+                        sb.Append((char)rdr.Read());
+                        state = State.Number;
+                        break;
                     default:
                         if (char.IsLetter(ch))
                         {
@@ -350,6 +363,7 @@ namespace pp_win
             Id,
             Amp,
             Cr,
+            Number,
         }
 
         private static readonly Dictionary<string, TokenType> keywords = new  Dictionary<string, TokenType>

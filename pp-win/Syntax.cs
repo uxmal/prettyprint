@@ -35,11 +35,35 @@ namespace pp_win
 
     public record CompoundStatement(List<Statement> Statements) : Statement;
 
-    public record Expression;
+    public abstract record Expression
+    {
+        public abstract T Accept<T, C>(ExpressionVisitor<T, C> visitor, C context = default);
+    }
 
-    public record Id(string Name) : Expression;
+    public record Id(string Name) : Expression
+    {
+        public override T Accept<T, C>(ExpressionVisitor<T, C> visitor, C context = default) =>
+            visitor.VisitId(this, context);
+    }
 
-    public record Bin(TokenType Operator, Expression Left, Expression Right) : Expression;
+    public record Bin(TokenType Operator, Expression Left, Expression Right) : Expression
+    {
+        public override T Accept<T, C>(ExpressionVisitor<T, C> visitor, C context = default) =>
+            visitor.VisitBin(this, context);
+    }
 
-    public record FnApplication(Expression Function, Expression[] Argments) : Expression;
+    public record FnApplication(Expression Function, Expression[] Argments) : Expression
+    {
+        public override T Accept<T, C>(ExpressionVisitor<T, C> visitor, C context = default) =>
+            visitor.VisitApplication(this, context);
+    }
+
+
+    public interface ExpressionVisitor<T, C>
+    {
+        T VisitApplication(FnApplication fnApplication, C context);
+        T VisitBin(Bin bin, C context);
+        T VisitId(Id id, C context);
+    }
+
 }
