@@ -118,7 +118,7 @@ namespace Reko.Core.Output
             break_dq.PushFront((total_chars_enqueued, current_level, false));
         }
 
-        private void ConnectedLineBreak()
+        public void ConnectedLineBreak()
         {
             if (break_level < current_level)
             {

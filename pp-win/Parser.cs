@@ -10,15 +10,13 @@ namespace pp_win
 {
     class Parser
     {
-        private static readonly Token eofToken = new Token(TokenType.EOF);
-
         private readonly Lexer lexer;
         private Token token;
 
         public Parser(TextReader rdr)
         {
             this.lexer = new Lexer(rdr);
-            this.token = eofToken;
+            this.token = new(TokenType.EOF, 0);
         }
 
         public CompilationUnit Parse()
@@ -242,7 +240,7 @@ namespace pp_win
             else
             {
                 Token t = this.token;
-                this.token = eofToken;
+                this.token = new Token(TokenType.EOF, lexer.LineNumber);
                 return t;
             }
         }
@@ -266,7 +264,11 @@ namespace pp_win
         {
             this.rdr = rdr;
             this.sb = new StringBuilder();
+            this.LineNumber = 1;
         }
+
+        public int LineNumber { get; private set; }
+
 
         public Token Get()
         {
@@ -284,7 +286,7 @@ namespace pp_win
                     case -1: return Tok(TokenType.EOF);
                     case ' ': rdr.Read(); break;
                     case '\t': rdr.Read(); break;
-                    case '\n': rdr.Read(); break;
+                    case '\n': rdr.Read(); ++LineNumber; break;
                     case '\r': rdr.Read(); state = State.Cr; break;
                     case '(': rdr.Read(); return Tok(TokenType.Lparen);
                     case ')': rdr.Read(); return Tok(TokenType.Rparen);
@@ -322,7 +324,7 @@ namespace pp_win
                     {
                     case -1: return Tok(TokenType.EOF);
                     case '\n': rdr.Read(); state = State.Start; break;
-                    default: state = State.Start; break;
+                    default: ++LineNumber; state = State.Start; break;
                     }
                     break;
                 case State.Amp:
@@ -349,12 +351,12 @@ namespace pp_win
 
         private Token Tok(TokenType type)
         {
-            return new Token(type);
+            return new Token(type, LineNumber);
         }
 
         private Token Tok(TokenType type, object value)
         {
-            return new Token(type, value);
+            return new Token(type, LineNumber, value);
         }
 
         enum State
@@ -375,19 +377,22 @@ namespace pp_win
 
     public record Token
     {
-        public Token(TokenType type)
+        public Token(TokenType type, int lineNumber)
         {
             this.Type = type;
+            this.LineNumber = lineNumber;
             this.Value = null;
         }
         
-        public Token(TokenType type, object value)
+        public Token(TokenType type, int lineNumber, object value)
         {
             this.Type = type;
+            this.LineNumber = lineNumber;
             this.Value = value;
         }
 
         public TokenType Type { get; }
+        public int LineNumber { get; }
         public object Value { get; }
     }
 

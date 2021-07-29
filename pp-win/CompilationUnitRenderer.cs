@@ -39,6 +39,29 @@ namespace pp_win
 
         private void Render(FunctionDefinition fundef)
         {
+            Render(fundef.ReturnType);
+            pp.Write(" ");
+            pp.OptionalLineBreak();
+            pp.Write(fundef.Name);
+            pp.Write("(");
+            if (fundef.Parameters.Count > 0)
+            {
+                pp.BeginGroup();
+                var sep = "";
+                foreach (var parameter in fundef.Parameters)
+                {
+                    pp.Write(sep);
+                    Render(parameter);
+                    sep = ", ";
+                    pp.ConnectedLineBreak();
+                }
+                pp.EndGroup();
+            }
+            throw new NotImplementedException();
+        }
+
+        private void Render(Parameter parameter)
+        {
             throw new NotImplementedException();
         }
 
