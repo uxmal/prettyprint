@@ -3,6 +3,9 @@ using System.IO;
 
 namespace Reko.Core.Output
 {
+    /// <summary>
+    /// Abstracts the notion of an output device.
+    /// </summary>
     public class OutputDevice
     {
         private readonly TextWriter writer;
@@ -36,16 +39,21 @@ namespace Reko.Core.Output
 
         public void WriteLine()
         {
-            writer.WriteLine();
+            DoWriteLine();
             atStart = true;
         }
 
-        internal void Outdent()
+        protected virtual void DoWriteLine()
+        {
+            writer.WriteLine();
+        }
+
+        public void Outdent()
         {
             LeftMargin -= IndentWidth;
         }
 
-        internal void Indent()
+        public void Indent()
         {
             LeftMargin += IndentWidth;
         }

@@ -34,25 +34,26 @@
             this.label2 = new System.Windows.Forms.Label();
             this.txtDeviceWidth = new System.Windows.Forms.TextBox();
             this.txtIndentWidth = new System.Windows.Forms.TextBox();
+            this.label3 = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // txtSrc
             // 
             this.txtSrc.Font = new System.Drawing.Font("Lucida Console", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.txtSrc.Location = new System.Drawing.Point(30, 125);
+            this.txtSrc.Location = new System.Drawing.Point(30, 142);
             this.txtSrc.Multiline = true;
             this.txtSrc.Name = "txtSrc";
-            this.txtSrc.Size = new System.Drawing.Size(291, 289);
+            this.txtSrc.Size = new System.Drawing.Size(291, 272);
             this.txtSrc.TabIndex = 0;
             this.txtSrc.TextChanged += new System.EventHandler(this.textBox1_TextChanged);
             // 
             // txtOutput
             // 
             this.txtOutput.Font = new System.Drawing.Font("Lucida Console", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.txtOutput.Location = new System.Drawing.Point(350, 125);
+            this.txtOutput.Location = new System.Drawing.Point(350, 142);
             this.txtOutput.Multiline = true;
             this.txtOutput.Name = "txtOutput";
-            this.txtOutput.Size = new System.Drawing.Size(423, 289);
+            this.txtOutput.Size = new System.Drawing.Size(423, 272);
             this.txtOutput.TabIndex = 1;
             // 
             // label1
@@ -91,11 +92,21 @@
             this.txtIndentWidth.Text = "3";
             this.txtIndentWidth.TextChanged += new System.EventHandler(this.txtIndentWidth_TextChanged);
             // 
+            // label3
+            // 
+            this.label3.Location = new System.Drawing.Point(350, 7);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(423, 114);
+            this.label3.TabIndex = 6;
+            this.label3.Text = "%{: begin a group\r\n%}: end a group\r\n%t: indent\r\n%b: outdent\r\n%n: unconditional li" +
+    "ne break\r\n%o: optional line break\r\n%c: connected line break";
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 450);
+            this.Controls.Add(this.label3);
             this.Controls.Add(this.txtIndentWidth);
             this.Controls.Add(this.txtDeviceWidth);
             this.Controls.Add(this.label2);
@@ -117,6 +128,7 @@
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.TextBox txtDeviceWidth;
         private System.Windows.Forms.TextBox txtIndentWidth;
+        private System.Windows.Forms.Label label3;
     }
 }
 

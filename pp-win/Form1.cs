@@ -17,9 +17,9 @@ namespace pp_win
         public Form1()
         {
             InitializeComponent();
-            txtSrc.Text = @"if (%{a == 3 && b == 3%})%n
+            txtSrc.Text = @"if (%t%{a ==%o 3 &&%c b ==%o 3%}%b)%n
 {%t%n
-print(""#"");%n
+print(%t%{""#Kansanmida""%}%b);%n
 print('2');%n
 %b}%n
 ";

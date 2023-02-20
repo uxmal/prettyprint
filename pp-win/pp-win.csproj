@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <TargetFramework>net5.0-windows</TargetFramework>
+    <TargetFramework>net6.0-windows</TargetFramework>
     <RootNamespace>pp_win</RootNamespace>
     <UseWindowsForms>true</UseWindowsForms>
     <LangVersion>9</LangVersion>

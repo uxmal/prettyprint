@@ -11,9 +11,6 @@ namespace Reko.Core.Output
         private const char MARKER = '\v';       // VT
         private const char ESCAPE = '%';
 
-        private int indentWidth = 4;
-
-        private int device_output_width = 80;
         private OutputDevice output;
 
         public PrettyPrinter(OutputDevice output)
@@ -21,8 +18,6 @@ namespace Reko.Core.Output
             this.output = output;
             break_dq = new();
             buffer = new();
-            device_output_width = output.DeviceWidth;
-            indentWidth = output.IndentWidth;
         }
 
         private Dequeue<(int chars_enqueued, int level, bool connected)> break_dq;
@@ -65,11 +60,18 @@ namespace Reko.Core.Output
             Flush();
         }
 
+        /// <summary>
+        /// Starts a group of symbols. The pretty printer will attempt to keep these on a single line,
+        /// if possible.
+        /// </summary>
         public void BeginGroup()
         {
             ++current_level;
         }
 
+        /// <summary>
+        /// Ends a group of symbols.
+        /// </summary>
         public void EndGroup()
         {
             --current_level;
@@ -77,18 +79,28 @@ namespace Reko.Core.Output
                 break_level = current_level;
         }
 
+        /// <summary>
+        /// Sets the virtual left margin to a larger value.
+        /// </summary>
         public void Indent()
         {
             buffer.PushBack((INDENT, int.MaxValue));
             ++total_chars_enqueued;
         }
 
+        /// <summary>
+        /// Sets the virtual left margin to a smaller value.
+        /// </summary>
         public void Outdent()
         {
             buffer.PushBack((OUTDENT, int.MaxValue));
             ++total_chars_enqueued;
         }
 
+
+        /// <summary>
+        /// Forces a line break, flushing out any buffered characters.
+        /// </summary>
         public void UnconditionalLineBreak()
         {
             break_dq.Clear();
@@ -179,7 +191,7 @@ namespace Reko.Core.Output
 
 
         /// <summary>
-        /// Send the k leftmost symbols in the buffer to the output device. 
+        /// Send the <paramref name="k" /> leftmost symbols in the buffer to the output device. 
         /// </summary>
         private void print_buffer(int k)
         {
